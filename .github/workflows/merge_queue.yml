@@ -31,28 +31,26 @@ jobs:
       - name: Run Scorecard analysis
         run: |
           scorecard \
-            --repo=${{ github.repository }} \
-            --format=sarif \
+            --local=. \
+            --format=json \
             --show-details \
             --show-annotations \
-            -o results.sarif
+            -o results.json
 
       - name: Fail on critical findings
+        env:
+          # Checks classified as "Critical" risk by scorecard
+          CRITICAL_CHECKS: Dangerous-Workflow Webhooks
         run: |
-          critical=$(jq '
-            [.runs[] | . as $run |
-              ($run.tool.driver.rules | map({(.id): .properties["security-severity"]}) | add // {}) as $sev |
-              $run.results[] |
-              select(($sev[.ruleId] // "0") | tonumber >= 9.0)
-            ] | length' results.sarif)
-          if [ "$critical" -gt 0 ]; then
-            echo "::error::Scorecard found $critical critical finding(s):"
-            jq -r '
-              .runs[] | . as $run |
-              ($run.tool.driver.rules | map({(.id): .properties["security-severity"]}) | add // {}) as $sev |
-              $run.results[] |
-              select(($sev[.ruleId] // "0") | tonumber >= 9.0) |
-              "\(.ruleId) (severity: \($sev[.ruleId])): \(.message.text)"' results.sarif
+          for check in $CRITICAL_CHECKS; do
+            score=$(jq -r --arg name "$check" '.checks[] | select(.name == $name) | .score' results.json)
+            reason=$(jq -r --arg name "$check" '.checks[] | select(.name == $name) | .reason' results.json)
+            if [ -n "$score" ] && [ "$score" != "-1" ] && [ "$score" -lt 10 ]; then
+              echo "::error::$check (score: $score/10): $reason"
+              failed=1
+            fi
+          done
+          if [ "${failed:-0}" = "1" ]; then
             exit 1
           fi
           echo "No critical findings detected"
