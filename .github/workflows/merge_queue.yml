@@ -25,11 +25,12 @@ jobs:
           results_file: results.sarif
           results_format: sarif
           publish_results: false
-        # scorecard-action validates that GITHUB_REF matches the default branch.
-        # In a merge queue the ref is refs/heads/gh-readonly-queue/..., so we
-        # override it to pass validation. The action still analyzes the
-        # checked-out code (the merge queue commit).
+        # scorecard-action validates that the event is a pull_request or that
+        # GITHUB_REF matches the default branch. In a merge queue neither is
+        # true, so we override both to pass validation. The action still
+        # analyzes the checked-out code (the merge queue commit).
         env:
+          GITHUB_EVENT_NAME: pull_request
           GITHUB_REF: refs/heads/${{ github.event.repository.default_branch }}
 
       - name: Fail on critical findings
