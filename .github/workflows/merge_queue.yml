@@ -34,7 +34,8 @@ jobs:
             --repo=${{ github.repository }} \
             --format=sarif \
             --show-details \
-            --show-annotations > results.sarif
+            --show-annotations \
+            -o results.sarif
 
       - name: Fail on critical findings
         run: |
