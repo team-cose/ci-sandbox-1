@@ -19,19 +19,22 @@ jobs:
         with:
           persist-credentials: false
 
+      # scorecard-action enforces a default-branch-only restriction that
+      # cannot be bypassed in a merge queue (GITHUB_* env vars are
+      # read-only). Use the scorecard CLI directly instead.
+      - name: Install Scorecard
+        run: |
+          SCORECARD_VERSION=5.1.1
+          curl -sL https://github.com/ossf/scorecard/releases/download/v${SCORECARD_VERSION}/scorecard_${SCORECARD_VERSION}_linux_amd64.tar.gz | tar xz scorecard-linux-amd64
+          mv scorecard-linux-amd64 /usr/local/bin/scorecard
+
       - name: Run Scorecard analysis
-        uses: ossf/scorecard-action@4eaacf0543bb3f2c246792bd56e8cdeffafb205a # v2.4.3
-        with:
-          results_file: results.sarif
-          results_format: sarif
-          publish_results: false
-        # scorecard-action validates that the event is a pull_request or that
-        # GITHUB_REF matches the default branch. In a merge queue neither is
-        # true, so we override both to pass validation. The action still
-        # analyzes the checked-out code (the merge queue commit).
-        env:
-          GITHUB_EVENT_NAME: pull_request
-          GITHUB_REF: refs/heads/${{ github.event.repository.default_branch }}
+        run: |
+          scorecard \
+            --repo=${{ github.repository }} \
+            --format=sarif \
+            --show-details \
+            --show-annotations > results.sarif
 
       - name: Fail on critical findings
         run: |
