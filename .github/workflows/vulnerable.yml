@@ -1,0 +1,10 @@
+name: Greet PR author
+
+on:
+  pull_request:
+
+jobs:
+  greet:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo "Thanks for the PR, ${{ github.event.pull_request.title }}"
