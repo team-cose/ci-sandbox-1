@@ -39,7 +39,8 @@ jobs:
 
       - name: Fail on critical findings
         env:
-          # Checks classified as "Critical" risk by scorecard
+          # Checks classified as "Critical" risk by scorecard:
+          # https://github.com/ossf/scorecard/blob/main/docs/checks/internal/checks.yaml
           CRITICAL_CHECKS: Dangerous-Workflow Webhooks
         run: |
           for check in $CRITICAL_CHECKS; do
