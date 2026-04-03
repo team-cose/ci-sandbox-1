@@ -25,8 +25,8 @@ jobs:
       - name: Install Scorecard
         run: |
           SCORECARD_VERSION=5.1.1
-          curl -sL https://github.com/ossf/scorecard/releases/download/v${SCORECARD_VERSION}/scorecard_${SCORECARD_VERSION}_linux_amd64.tar.gz | tar xz scorecard-linux-amd64
-          mv scorecard-linux-amd64 /usr/local/bin/scorecard
+          curl -sL https://github.com/ossf/scorecard/releases/download/v${SCORECARD_VERSION}/scorecard_${SCORECARD_VERSION}_linux_amd64.tar.gz | tar xz scorecard
+          mv scorecard /usr/local/bin/scorecard
 
       - name: Run Scorecard analysis
         run: |
