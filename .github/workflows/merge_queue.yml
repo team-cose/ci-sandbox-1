@@ -2,11 +2,13 @@ name: Merge Queue
 
 on:
   merge_group:
+    types: [checks_requested]
   pull_request:
 
 jobs:
   scorecard:
     name: Scorecard security scan
+    if: ${{ github.event_name == 'merge_group' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
@@ -52,8 +54,8 @@ jobs:
     steps:
       - name: Check all jobs status
         run: |
-          if [[ "${{ needs.scorecard.result }}" != "success" ]]; then
-            echo "Scorecard job failed or was cancelled"
+          if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            echo "One or more jobs failed or were cancelled"
             exit 1
           fi
           echo "All checks passed"
