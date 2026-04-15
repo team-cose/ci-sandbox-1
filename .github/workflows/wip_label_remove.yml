@@ -11,7 +11,7 @@ jobs:
   remove_wip_label:
     if: |
       github.event.review.state == 'approved' &&
-      (github.event.review.author_association == 'MEMBER' || github.event.review.author_association == 'OWNER')
+      (github.event.review.author_association == 'MEMBER' || github.event.review.author_association == 'OWNER' || github.event.review.author_association == 'COLLABORATOR')
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
