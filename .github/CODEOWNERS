@@ -1,0 +1,4 @@
+* @vectordotdev/vector
+
+# Keep documentation team paths in sync with .github/workflows/wip_label.yml
+docs/ @vectordotdev/vector @vectordotdev/documentation
