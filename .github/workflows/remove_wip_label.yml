@@ -9,7 +9,9 @@ on:
 
 jobs:
   remove_wip_label:
-    if: github.event.review.state == 'approved'
+    if: >-
+      github.event.review.state == 'approved' &&
+      (github.event.review.author_association == 'MEMBER' || github.event.review.author_association == 'OWNER')
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
