@@ -1,0 +1,35 @@
+name: Windows Bootstrap Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - pavlos/windows-bootstrap-drop-choco
+
+jobs:
+  bootstrap:
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run bootstrap
+        run: .\scripts\environment\bootstrap-windows-2025.ps1
+
+      - name: Verify protoc on PATH
+        run: |
+          Write-Host "which protoc: $((Get-Command protoc).Source)"
+          protoc --version
+
+      - name: Verify make on PATH
+        run: |
+          Write-Host "which make: $((Get-Command make).Source)"
+          make --version
+
+      - name: Run a trivial Makefile target
+        run: |
+          Set-Content -Path Makefile -Value @(
+            ".PHONY: hello",
+            "hello:",
+            "`t@echo hello-from-make"
+          )
+          make hello
