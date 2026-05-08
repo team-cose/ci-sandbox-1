@@ -17,6 +17,11 @@ runs:
       id: oidc
       shell: bash
       run: |
+        # DD_TOKEN_SKIP_FEDERATION allows tests to simulate the fork-PR path by
+        # unsetting the runner-injected OIDC URL within this shell.
+        if [ "${DD_TOKEN_SKIP_FEDERATION:-false}" = "true" ]; then
+          unset ACTIONS_ID_TOKEN_REQUEST_URL
+        fi
         if [ -n "${ACTIONS_ID_TOKEN_REQUEST_URL}" ]; then
           echo "available=true" >> "$GITHUB_OUTPUT"
         else
