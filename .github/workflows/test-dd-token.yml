@@ -14,9 +14,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Simulate fork PR (clear OIDC URL)
+        run: echo "ACTIONS_ID_TOKEN_REQUEST_URL=" >> "$GITHUB_ENV"
+
       - uses: ./.github/actions/dd-token
-        env:
-          ACTIONS_ID_TOKEN_REQUEST_URL: ""
 
       - name: Verify job continued past dd-token
         run: echo "dd-token action completed; DD_API_KEY=${DD_API_KEY:-(not set)}"
