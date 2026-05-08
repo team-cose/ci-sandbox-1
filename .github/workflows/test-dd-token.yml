@@ -1,0 +1,20 @@
+name: Test dd-token action
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  test:
+    name: Test dd-token graceful fallback
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/dd-token
+
+      - name: Verify job continued past dd-token
+        run: echo "dd-token action completed; DD_API_KEY=${DD_API_KEY:-(not set)}"
